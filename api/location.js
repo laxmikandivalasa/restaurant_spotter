@@ -1,3 +1,8 @@
+console.log("🔍 location.js loaded");
+
+
+const express = require('express');
+const router = express.Router();
 const { loadData } = require('../lib/data');
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -14,11 +19,13 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-module.exports = async (req, res) => {
+router.get('/', async (req, res) => {
   const restaurantData = await loadData();
   const { lat, lng, maxDistance = 10 } = req.query;
-  if (!lat || !lng)
+
+  if (!lat || !lng) {
     return res.status(400).json({ error: 'Latitude and longitude are required' });
+  }
 
   const userLat = parseFloat(lat);
   const userLng = parseFloat(lng);
@@ -41,4 +48,6 @@ module.exports = async (req, res) => {
     .sort((a, b) => a.distance - b.distance);
 
   res.status(200).json(results);
-};
+});
+
+module.exports = router;
